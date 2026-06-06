@@ -1,0 +1,29 @@
+# Secretos - NUNCA versionar
+.env
+
+# Entorno virtual de Python
+venv/
+.venv/
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+
+# Bitacoras y datos generados
+logs/*.db
+logs/*.json
+config/blacklist.cache
+
+# Artefactos de compilacion (.exe / PyInstaller)
+build/
+build-venv/
+dist/
+*.spec
+
+# Paquetes y escenario generados
+*.zip
+tools/demo.pcap
+
+# Sistema
+.DS_Store
+Thumbs.db

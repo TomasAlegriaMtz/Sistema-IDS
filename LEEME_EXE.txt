@@ -1,0 +1,58 @@
+=====================================================================
+  IDS - Sistema de Deteccion de Intrusos   (Ejecutable Windows)
+  MODO: CAPTURA EN VIVO
+=====================================================================
+
+------------------------------------------------------------
+  PASO 1 - Instalar Npcap (UNA sola vez)
+------------------------------------------------------------
+La captura de paquetes en vivo requiere Npcap (un driver de red).
+  1. Descargalo GRATIS de:   https://npcap.com
+  2. Instalalo con las opciones por defecto.
+(Un ejecutable no puede traer un driver de kernel; por eso Npcap se
+ instala aparte. Es el estandar que usa tambien Wireshark.)
+
+------------------------------------------------------------
+  PASO 2 - Ejecutar
+------------------------------------------------------------
+Doble clic en  ids.exe
+  * Windows pedira permisos (ventana UAC) -> pulsa "Si".
+    (Capturar la red necesita privilegios de administrador.)
+  * Se abrira el navegador con el PANEL:  http://127.0.0.1:5000
+  * El IDS empezara a monitorear la red EN VIVO.
+
+------------------------------------------------------------
+  QUE VAS A VER
+------------------------------------------------------------
+  - Los 4 modulos activos: Listas Blancas, Monitoreo de Sitios,
+    IPs Peligrosas (Threat Intel) y Forense (Whois/AbuseIPDB).
+  - En el panel: metricas, dominios visitados, alertas y la seccion
+    "GESTION DE LISTAS" para autorizar equipos o marcar IPs peligrosas.
+  - Al inicio, los equipos de la red pueden salir como "intrusos"
+    porque no estan autorizados: agregalos en "Gestion de listas".
+
+------------------------------------------------------------
+  CORREO (opcional)
+------------------------------------------------------------
+En el panel, seccion "Configuracion de correo (SMTP)", coloca tus
+datos de Mailtrap (u otro SMTP) y el correo del administrador. Las
+alertas empezaran a enviarse por correo en la siguiente deteccion.
+
+------------------------------------------------------------
+  CARPETAS (no las borres; van junto al .exe)
+------------------------------------------------------------
+  config\   -> configuracion y listas (editables desde el panel)
+  tools\    -> escenario de respaldo (demo.pcap)
+  logs\     -> bitacora (se crea sola al ejecutar)
+
+------------------------------------------------------------
+  SOLUCION DE PROBLEMAS
+------------------------------------------------------------
+  * "No se pudo capturar en vivo":
+       -> instala Npcap y abre el .exe como administrador.
+       -> mientras tanto, el .exe muestra la DEMO grabada de respaldo.
+  * No abre el navegador:
+       -> entra manualmente a  http://127.0.0.1:5000
+  * El correo llega a SPAM:
+       -> revisa SPF/DKIM del remitente, o usa el sandbox de Mailtrap.
+=====================================================================
