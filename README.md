@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 ![Scapy](https://img.shields.io/badge/Scapy-captura%20de%20paquetes-orange)
 ![Plataforma](https://img.shields.io/badge/SO-Linux%20%7C%20Windows-informational)
-![Licencia](https://img.shields.io/badge/Licencia-GPLv3-green)
+
 
 Sistema de **Detección y Prevención de Intrusos (IDS/IPS)** escrito en **Python** sobre **Scapy**.
 Monitorea la red **EN VIVO** en las **Capas 2/3/7** del modelo OSI: registra la actividad,
@@ -38,7 +38,7 @@ todo desde un **dashboard web** en tiempo real.
 
 > La captura en vivo requiere privilegios: **`sudo`** en Linux, **administrador + [Npcap](https://npcap.com)** en Windows.
 
-### 🐧 Linux (Ubuntu / Kali / Debian)
+### Linux (Ubuntu / Kali / Debian)
 ```bash
 # Requisitos (una vez):
 sudo apt update && sudo apt install -y python3-venv python3-pip git
@@ -51,7 +51,7 @@ sudo ./venv/bin/python3 -m src.web.app
 ```
 Abre el panel en **http://127.0.0.1:5000**.
 
-### 🪟 Windows
+### Windows
 **Opción A — Ejecutable (lo más fácil):**
 1. Instala **[Npcap](https://npcap.com)**.
 2. Doble clic en **`ids.exe`** → acepta los permisos (UAC).
@@ -67,21 +67,21 @@ venv\Scripts\python.exe -m src.web.app           # en otra ventana: dashboard
 
 ---
 
-## 📋 Requisitos
+## Requisitos
 - **Python 3.11+**
 - **Linux** (Kali/Ubuntu recomendado) o **Windows**
 - Captura en vivo: `sudo` (Linux) · **Npcap** + administrador (Windows)
 
-## 🔐 Seguridad y credenciales
+## Seguridad y credenciales
 - Las credenciales (SMTP, API keys) viven **solo** en `.env` (ignorado por git). El código las lee con `os.getenv()`; **no hay nada hardcodeado**.
 - Copia `.env.example` a `.env` y rellena tus datos, **o** configúralo desde el panel (vista *Correo*).
 
-## 🧱 Modelo OSI (dónde actúa)
+## Modelo OSI (dónde actúa)
 - **Capa 2 (Enlace):** MAC → listas blancas, detección de equipos.
 - **Capa 3 (Red):** IP → listas blancas/negras, bloqueo IPS.
 - **Capa 7 (Aplicación):** DNS/HTTP → monitoreo de sitios.
 
-## 🗂️ Estructura del proyecto
+## Estructura del proyecto
 ```
 ids/
 ├── launcher.py             # punto de entrada del ejecutable (.exe), en vivo
@@ -113,10 +113,9 @@ ids/
 └── logs/                    # bitácora (se genera sola)
 ```
 
-## 📜 Licencia
-**GNU GPL v3** — software libre: úsalo, estúdialo, compártelo y modifícalo.
 
-## ⚠️ Aviso
+
+## Aviso
 Proyecto **educativo**. Úsalo únicamente en redes propias o con autorización explícita.
 El monitoreo de redes puede estar regulado por la ley (en México, la **LFPDPPP** y artículos
 constitucionales sobre privacidad).
