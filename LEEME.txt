@@ -1,62 +1,37 @@
 =====================================================================
-  IDS - Sistema de Deteccion de Intrusos
-  GUIA RAPIDA PARA EJECUTAR  (descomprimir y correr)
+  IDS/IPS - Guia rapida (captura EN VIVO)
 =====================================================================
 
-REQUISITO UNICO: tener Python 3 instalado.
-  - Linux (Kali/Ubuntu): normalmente ya viene.
-  - Windows: descargar de  https://www.python.org/downloads/
-             IMPORTANTE: al instalar, marca la casilla "Add Python to PATH".
+REQUISITO: Python 3.
+Captura en vivo -> sudo (Linux)  /  administrador + Npcap (Windows).
 
-La DEMO no necesita permisos de administrador, ni Npcap, ni configurar
-correo. Todo se ve en la consola y en el panel web.
+---------------------------------------------------------------------
+  LINUX (Kali / Ubuntu / Debian)
+---------------------------------------------------------------------
+  Requisitos (una vez):
+     sudo apt update && sudo apt install -y python3-venv python3-pip
+
+  1) Arrancar el IDS EN VIVO (instala todo la primera vez):
+     bash run_live.sh
+
+  2) (Opcional) El panel web, en OTRA terminal:
+     sudo ./venv/bin/python3 -m src.web.app
+     -> abre http://127.0.0.1:5000
 
 ---------------------------------------------------------------------
   WINDOWS
 ---------------------------------------------------------------------
-  1) Doble clic en:   run_demo.bat
-       (la primera vez instala todo solo; tarda 1-2 min)
-  2) (Opcional) Para el panel web, doble clic en:   run_dashboard.bat
-       y abre en el navegador:   http://127.0.0.1:5000
-
----------------------------------------------------------------------
-  LINUX / Kali / Ubuntu / macOS
----------------------------------------------------------------------
-  Abre una terminal en esta carpeta y ejecuta:
-  1)   bash run_demo.sh
-         (la primera vez instala todo solo; tarda 1-2 min)
-  2) (Opcional) En OTRA terminal, para el panel web:
-         bash run_dashboard.sh
-       y abre en el navegador:   http://127.0.0.1:5000
-
-  Si en Linux falla la creacion del entorno, instala:
-         sudo apt install -y python3-venv
+  Usa el ejecutable: instala Npcap (https://npcap.com) y doble clic en
+  ids.exe (pedira permisos de administrador). Ver LEEME_EXE.txt.
 
 ---------------------------------------------------------------------
   QUE VAS A VER
 ---------------------------------------------------------------------
-La demo reproduce un escenario de red grabado y dispara LOS 4 MODULOS:
+  Los 4 modulos activos: Listas Blancas, Monitoreo de Sitios,
+  IPs Peligrosas (Threat Intel) y Forense (Whois/AbuseIPDB).
+  Las alertas aparecen en consola y en el panel web; y por correo si
+  configuras el SMTP.
 
-   [1] Listas Blancas    -> detecta un equipo NO autorizado (intruso)
-   [2] Monitoreo         -> registra los sitios (DNS) visitados
-   [3] IPs Peligrosas    -> alerta de conexion a una IP de botnet real
-   [4] Forense (Whois)   -> consulta el contacto de abuso de esa IP
-
-Las alertas aparecen EN LA CONSOLA y en el PANEL WEB en tiempo real.
-
-CORREO (opcional): por defecto las alertas se ven en consola/panel.
-  Si quieres que ademas se envien por correo, copia el archivo
-  ".env.example" como ".env" y coloca tus credenciales SMTP (Mailtrap).
-
-INTERNET: se recomienda tener conexion para que el Modulo 4 (forense)
-  obtenga los datos reales del proveedor de la IP peligrosa.
-
----------------------------------------------------------------------
-  CAPTURA EN VIVO (avanzado, opcional)
----------------------------------------------------------------------
-Para monitorear la red real (no la demo):
-  - Windows: instalar Npcap (https://npcap.com) y ejecutar como Admin.
-  - Linux:   ejecutar con sudo.
-  Comando:   python -m src.main        (sin --pcap)
-  Ver detalles y configuracion en README.md
+  CORREO (opcional): copia .env.example a .env y pon tus datos SMTP,
+  o configuralo desde el panel (vista "Correo").
 =====================================================================

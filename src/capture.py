@@ -141,7 +141,6 @@ class Capturador:
     def __init__(self, settings: dict):
         net = settings.get("network", {}) or {}
         self.interface = net.get("interface", "eth0")
-        self.pcap_file = net.get("pcap_file")   # si tiene valor -> modo demo
         self.handlers = []
 
     def registrar(self, handler):
@@ -167,12 +166,7 @@ class Capturador:
             return None
 
     def iniciar(self):
-        """Arranca la captura: desde .pcap (demo) o en vivo (interfaz)."""
-        if self.pcap_file:
-            print(f"[captura] Modo DEMO, leyendo archivo: {self.pcap_file}")
-            sniff(offline=self.pcap_file, prn=self._procesar, store=0)
-            return
-
+        """Arranca la captura EN VIVO en la interfaz (autodetectada si es 'auto')."""
         iface = self.interface
         if iface in (None, "", "auto"):
             iface = self._interfaz_auto()

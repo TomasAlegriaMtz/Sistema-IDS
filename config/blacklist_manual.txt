@@ -3,14 +3,10 @@
 #
 #  Formato por linea:   IP,descripcion_del_riesgo
 #  Las lineas que empiezan con # son comentarios.
+#
+#  Agrega aqui IPs peligrosas adicionales (o desde el dashboard).
+#  El feed automatico de abuse.ch ya aporta miles de IPs de botnets.
 # ============================================================
 
-# --- Entrada de PRUEBA para demostrar el Modulo 3 ---
-#  1.1.1.1 es una IP publica segura para hacer ping (DNS de Cloudflare).
-#  Al ejecutar  "ping 1.1.1.1"  el IDS disparara la ALERTA DE EMERGENCIA,
-#  como si fuera una conexion a un servidor C2 de botnet.
-#  (En un entorno real, elimina esta linea.)
-1.1.1.1,PRUEBA - Simulacion de C2/Botnet (familia Emotet)
-
-# Agregada automaticamente por la demo:
-162.243.103.246,Emotet (Botnet/C2) - escenario demo
+# Ejemplo (descomenta y pon una IP real para agregarla a mano):
+# 203.0.113.66,IP maliciosa de ejemplo

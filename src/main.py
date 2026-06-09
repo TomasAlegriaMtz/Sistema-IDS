@@ -1,11 +1,11 @@
 """
 main.py - Orquestador del IDS
 =============================
-Carga la configuracion, arma los modulos y arranca la captura.
+Carga la configuracion, arma los modulos y arranca la CAPTURA EN VIVO.
 
 Uso:
-    sudo ./venv/bin/python3 -m src.main                          # captura EN VIVO
-    sudo ./venv/bin/python3 -m src.main --pcap tools/demo.pcap   # modo DEMO (.pcap)
+    sudo ./venv/bin/python3 -m src.main          # usa la interfaz de settings.yaml
+    sudo ./venv/bin/python3 -m src.main --auto   # autodetecta interfaz y subred
 """
 from __future__ import annotations
 
@@ -21,8 +21,8 @@ from src.threat_intel import ModuloThreatIntel
 from src.forensics import ModuloForense
 
 
-def main(pcap: str | None = None, auto: bool = False):
-    """Arranca el IDS. 'pcap' -> modo demo; 'auto' -> interfaz y subred autodetectadas."""
+def main(auto: bool = False):
+    """Arranca el IDS en captura EN VIVO. 'auto' autodetecta interfaz y subred."""
     print("=" * 64)
     print("  IDS - Sistema de Deteccion de Intrusos")
     print("=" * 64)
@@ -30,25 +30,22 @@ def main(pcap: str | None = None, auto: bool = False):
     settings = load_settings()
     whitelist = load_whitelist()
 
-    if pcap:
-        settings.setdefault("network", {})["pcap_file"] = pcap
-
     net = settings.setdefault("network", {})
     if auto:
         net["interface"] = "auto"
-    if not pcap and (auto or net.get("monitored_subnet") in (None, "", "auto")):
+    if auto or net.get("monitored_subnet") in (None, "", "auto"):
         detectada = detectar_subred()
         if detectada:
             net["monitored_subnet"] = detectada
             print(f"  Subred autodetectada   : {detectada}")
-    modo = f"PCAP ({net['pcap_file']})" if net.get("pcap_file") \
-        else f"EN VIVO ({net.get('interface')})"
-    print(f"  Modo de captura        : {modo}")
+
+    print(f"  Interfaz               : {net.get('interface')}")
     print(f"  Subred vigilada        : {net.get('monitored_subnet')}")
     print(f"  Admin (recibe alertas) : {settings.get('admin', {}).get('email')}")
     print(f"  Equipos autorizados    : {len(whitelist['equipos'])}")
     print("-" * 64)
 
+    # Componentes compartidos
     notificador = Notificador(settings)
     reporter = Reporter(settings)
 
@@ -90,22 +87,15 @@ def main(pcap: str | None = None, auto: bool = False):
         cap.iniciar()
     except KeyboardInterrupt:
         print("\n[IDS] Detenido por el usuario.")
-        return
-
-    # Si la captura termino sola, fue modo PCAP: esperar el forense y los correos.
-    if net.get("pcap_file"):
-        print("\n[IDS] PCAP procesado. Completando forense y enviando correos...")
-        forense.esperar()
-        notificador.esperar()
-        print("[IDS] Demo finalizada. Revisa Mailtrap y el dashboard.")
 
 
 def _cli():
-    parser = argparse.ArgumentParser(description="IDS - Sistema de Deteccion de Intrusos")
-    parser.add_argument("--pcap", metavar="ARCHIVO",
-                        help="Leer de un archivo .pcap (modo demo) en vez de capturar en vivo")
+    parser = argparse.ArgumentParser(
+        description="IDS - Sistema de Deteccion de Intrusos (captura en vivo)")
+    parser.add_argument("--auto", action="store_true",
+                        help="Autodetecta la interfaz y la subred (recomendado)")
     args = parser.parse_args()
-    main(pcap=args.pcap)
+    main(auto=args.auto)
 
 
 if __name__ == "__main__":

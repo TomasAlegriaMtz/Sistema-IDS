@@ -14,10 +14,6 @@ network:
   #   LAB real (VM-gateway)        -> 192.168.50.0/24
   monitored_subnet: 10.0.2.0/24
 
-  # MODO DEMO: si pones la ruta de un .pcap, el IDS lo lee en vez
-  # de capturar en vivo (demo reproducible). Deja null para vivo.
-  pcap_file: null        # ejemplo: tools/demo.pcap
-
   # El propio equipo que ejecuta el IDS (sensor) NO se marca como intruso.
   # (Asi tu PC no sale como intrusa sin tener que ponerla en la lista blanca.)
   ignorar_equipo_local: true

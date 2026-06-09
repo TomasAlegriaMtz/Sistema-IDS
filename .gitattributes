@@ -1,0 +1,18 @@
+# ============================================================
+#  Normalizacion de finales de linea (line endings)
+# ============================================================
+
+# Por defecto: Git normaliza automaticamente (guarda LF en el repositorio).
+* text=auto
+
+# Los scripts de shell DEBEN conservar LF (si no, fallan en Linux por el \r).
+*.sh text eol=lf
+
+# Los archivos por lotes de Windows mejor con CRLF.
+*.bat text eol=crlf
+
+# Archivos binarios: que Git no toque sus finales de linea.
+*.pcap binary
+*.db binary
+*.png binary
+*.zip binary
