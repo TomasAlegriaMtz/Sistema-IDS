@@ -1,10 +1,4 @@
 @echo off
-REM =====================================================================
-REM   Construye el ejecutable ids.exe (Windows) con PyInstaller.
-REM   El .exe captura EN VIVO. Genera la carpeta dist\ lista para distribuir
-REM   (ids.exe + config + LEEME_EXE.txt).
-REM   Requiere Python instalado.
-REM =====================================================================
 cd /d "%~dp0"
 
 echo [1/3] Preparando entorno de compilacion...

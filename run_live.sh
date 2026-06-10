@@ -1,12 +1,4 @@
 #!/usr/bin/env bash
-# =====================================================================
-#   IDS - Captura EN VIVO desde codigo (Linux: Ubuntu / Kali / Debian)
-#   Crea el entorno la primera vez y arranca el IDS en vivo con la
-#   interfaz y la subred AUTODETECTADAS. Requiere privilegios (sudo).
-#
-#   Uso:   bash run_live.sh
-#   Panel: en otra terminal -> sudo ./venv/bin/python3 -m src.web.app
-# =====================================================================
 cd "$(dirname "$0")"
 
 if ! command -v python3 >/dev/null 2>&1; then
@@ -14,7 +6,6 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
-# Primera vez: crear entorno virtual e instalar dependencias (sin sudo)
 if [ ! -d venv ]; then
   echo "[setup] Primera vez: creando entorno e instalando dependencias..."
   python3 -m venv venv || {

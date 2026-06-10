@@ -1,20 +1,3 @@
-"""
-app.py - Dashboard web del IDS (tema profesional, autocontenido)
-================================================================
-Panel tipo "SOC" con barra lateral, KPIs, graficas (SVG, sin librerias
-externas), vistas separadas (Dashboard / Alertas / Sitios / Listas / IPS /
-Configuracion), busqueda y filtros por severidad.
-
-Funciones:
-  * Lee la bitacora (logs/ids.db) y la muestra en vivo (auto-refresh).
-  * Gestiona listas (blanca/negra) en caliente.
-  * Configura el correo (SMTP) en caliente.
-  * Controla el Modo IPS (bloqueo automatico) con boton ON/OFF.
-
-Autocontenido: HTML/CSS/JS embebido, sin CDNs (funciona sin internet).
-
-Uso:  ./venv/bin/python3 -m src.web.app   ->  http://127.0.0.1:5000
-"""
 from __future__ import annotations
 
 import ipaddress
@@ -35,7 +18,6 @@ app = Flask(__name__)
 _settings = load_settings()
 _DB = str(BASE_DIR / (_settings.get("logging", {}) or {}).get("database", "logs/ids.db"))
 
-
 def _query(sql, params=()):
     try:
         conn = sqlite3.connect(_DB)
@@ -46,7 +28,6 @@ def _query(sql, params=()):
             conn.close()
     except Exception:
         return []
-
 
 def _scalar(sql, params=()):
     try:
@@ -59,7 +40,6 @@ def _scalar(sql, params=()):
     except Exception:
         return 0
 
-
 def _ip_valida(ip: str) -> bool:
     try:
         ipaddress.ip_address(ip)
@@ -67,12 +47,9 @@ def _ip_valida(ip: str) -> bool:
     except ValueError:
         return False
 
-
 def _mac_valida(mac: str) -> bool:
     return bool(re.fullmatch(r"([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}", mac or ""))
 
-
-# ============================ API de datos ============================
 @app.route("/api/data")
 def api_data():
     return jsonify({
@@ -94,15 +71,12 @@ def api_data():
                           "ORDER BY id DESC LIMIT 200"),
     })
 
-
-# ============================ API de listas ============================
 @app.route("/api/lists")
 def api_lists():
     return jsonify({
         "whitelist": load_whitelist()["equipos"],
         "blacklist": load_blacklist_manual(),
     })
-
 
 @app.route("/api/whitelist/add", methods=["POST"])
 def wl_add():
@@ -121,7 +95,6 @@ def wl_add():
     save_whitelist(equipos)
     return jsonify({"ok": True})
 
-
 @app.route("/api/whitelist/delete", methods=["POST"])
 def wl_del():
     d = request.get_json(force=True, silent=True) or {}
@@ -137,7 +110,6 @@ def wl_del():
     save_whitelist(nuevos)
     return jsonify({"ok": True})
 
-
 @app.route("/api/blacklist/add", methods=["POST"])
 def bl_add():
     d = request.get_json(force=True, silent=True) or {}
@@ -151,7 +123,6 @@ def bl_add():
         save_blacklist_manual(entradas)
     return jsonify({"ok": True})
 
-
 @app.route("/api/blacklist/delete", methods=["POST"])
 def bl_del():
     d = request.get_json(force=True, silent=True) or {}
@@ -160,12 +131,9 @@ def bl_del():
     save_blacklist_manual(entradas)
     return jsonify({"ok": True})
 
-
-# ============================ API de correo ============================
 @app.route("/api/email")
 def api_email():
     return jsonify(load_email_config())
-
 
 @app.route("/api/email/save", methods=["POST"])
 def email_save():
@@ -187,37 +155,30 @@ def email_save():
     update_env(updates)
     return jsonify({"ok": True})
 
-
-# ============================ API de Modo IPS ============================
 @app.route("/api/email/test", methods=["POST"])
 def email_test():
     from src.notifier import enviar_prueba
     ok, msg = enviar_prueba(_settings)
     return jsonify({"ok": ok, "msg": msg})
 
-
 @app.route("/api/ips")
 def api_ips():
     return jsonify({"enabled": firewall.esta_activo(),
                     "blocked": firewall.listar_bloqueadas()})
-
 
 @app.route("/api/ips/toggle", methods=["POST"])
 def ips_toggle():
     firewall.set_activo(not firewall.esta_activo())
     return jsonify({"ok": True, "enabled": firewall.esta_activo()})
 
-
 @app.route("/api/ips/clear", methods=["POST"])
 def ips_clear():
     n = firewall.limpiar()
     return jsonify({"ok": True, "eliminadas": n})
 
-
 @app.route("/")
 def index():
     return Response(PAGINA, mimetype="text/html")
-
 
 PAGINA = r"""<!doctype html>
 <html lang="es"><head>
@@ -236,7 +197,6 @@ PAGINA = r"""<!doctype html>
  a{cursor:pointer;text-decoration:none;color:inherit;}
  .app{display:flex;min-height:100vh;}
 
- /* Sidebar */
  .sidebar{width:230px;background:linear-gradient(180deg,#0e1320,#0a0d16);
    border-right:1px solid var(--border);padding:22px 16px;display:flex;flex-direction:column;
    position:sticky;top:0;height:100vh;}
@@ -257,7 +217,6 @@ PAGINA = r"""<!doctype html>
    box-shadow:0 0 8px var(--green);animation:pulse 1.4s infinite;}
  @keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
 
- /* Content */
  .content{flex:1;padding:26px 32px;}
  .content>*{max-width:1200px;margin-left:auto;margin-right:auto;}
  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
@@ -265,7 +224,6 @@ PAGINA = r"""<!doctype html>
  .clock{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;}
  .view.hidden{display:none;}
 
- /* KPI cards */
  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
  .kpi{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;
    display:flex;align-items:center;gap:14px;}
@@ -274,7 +232,6 @@ PAGINA = r"""<!doctype html>
  .kpi-num{font-size:26px;font-weight:700;line-height:1;}
  .kpi-lbl{color:var(--muted);font-size:12px;margin-top:5px;text-transform:uppercase;letter-spacing:.5px;}
 
- /* Panels */
  .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;
    padding:18px 20px;margin-bottom:22px;}
  .panel h2{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;
@@ -345,7 +302,6 @@ PAGINA = r"""<!doctype html>
       <div class="clock" id="clock"></div>
     </div>
 
-    <!-- DASHBOARD -->
     <section id="v-dashboard" class="view">
       <div class="kpis">
         <div class="kpi"><div class="kpi-ic" style="background:rgba(88,166,255,.15);color:var(--blue);">&#127760;</div>
@@ -364,7 +320,6 @@ PAGINA = r"""<!doctype html>
       <div class="panel"><h2>Top dominios visitados</h2><div id="top"></div></div>
     </section>
 
-    <!-- ALERTAS -->
     <section id="v-alertas" class="view hidden">
       <div class="panel">
         <div class="toolbar">
@@ -381,7 +336,6 @@ PAGINA = r"""<!doctype html>
       </div>
     </section>
 
-    <!-- SITIOS -->
     <section id="v-sitios" class="view hidden">
       <div class="panel">
         <div class="toolbar">
@@ -392,7 +346,6 @@ PAGINA = r"""<!doctype html>
       </div>
     </section>
 
-    <!-- LISTAS -->
     <section id="v-listas" class="view hidden">
       <div class="panel"><h2>Gestion de listas (cambios en vivo)</h2>
         <div class="lists">
@@ -418,7 +371,6 @@ PAGINA = r"""<!doctype html>
       </div>
     </section>
 
-    <!-- IPS -->
     <section id="v-ips" class="view hidden">
       <div class="panel"><h2>Modo IPS &mdash; Prevencion (bloqueo automatico)</h2>
         <p class="muted" style="margin-bottom:16px;">Cuando esta ACTIVO, el IDS bloquea en el firewall a los intrusos y a las IPs peligrosas. Nunca bloquea tu equipo, el gateway ni las IPs autorizadas.</p>
@@ -431,7 +383,6 @@ PAGINA = r"""<!doctype html>
       </div>
     </section>
 
-    <!-- CONFIG -->
     <section id="v-config" class="view hidden">
       <div class="panel"><h2>Configuracion de correo (SMTP)</h2>
         <p class="muted" style="margin-bottom:16px;">Cambia el servidor, usuario, contrasena y el correo del administrador. Se aplica en la proxima alerta.</p>
@@ -461,7 +412,6 @@ async function jget(u){const r=await fetch(u);return r.json();}
 async function jpost(u,b){const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})});return r.json();}
 const COL={intruso:'#d29922',emergencia:'#f85149',forense:'#58a6ff',bloqueo:'#a371f7'};
 
-// ----- Navegacion entre vistas -----
 document.querySelectorAll('.nav a').forEach(a=>{
   a.addEventListener('click',()=>{
     document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));
@@ -474,10 +424,8 @@ document.querySelectorAll('.nav a').forEach(a=>{
   });
 });
 
-// ----- Reloj -----
 setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleString();},1000);
 
-// ----- Grafica de linea (SVG) -----
 function renderLinea(serie){
   const data=serie.slice().reverse();
   const box=document.getElementById('chart-line');
@@ -497,7 +445,6 @@ function renderLinea(serie){
     +'<text x="'+(w-pad-30)+'" y="'+(h-6)+'" fill="#8b93a9" font-size="10">'+esc(data[data.length-1].t.slice(11))+'</text></svg>';
 }
 
-// ----- Grafica de dona (SVG) -----
 function renderDona(sev){
   const box=document.getElementById('chart-donut');
   const total=sev.reduce((s,x)=>s+x.c,0);
@@ -515,7 +462,6 @@ function renderDona(sev){
     +'<div class="legend">'+leg+'</div>';
 }
 
-// ----- Render tablas con filtros -----
 function renderAlertas(){
   const q=(document.getElementById('f-alert-q').value||'').toLowerCase();
   const sev=document.getElementById('f-alert-sev').value;
@@ -551,7 +497,6 @@ async function refresh(){
   }catch(e){}
 }
 
-// ----- Listas -----
 async function loadLists(){
   try{
     const d=await jget('/api/lists');
@@ -576,7 +521,6 @@ document.addEventListener('click',async ev=>{
   loadLists();
 });
 
-// ----- Correo -----
 async function loadEmail(){try{const d=await jget('/api/email');
   document.getElementById('em-host').value=d.host||'';document.getElementById('em-port').value=d.port||'';
   document.getElementById('em-user').value=d.user||'';document.getElementById('em-to').value=d.to||'';
@@ -593,7 +537,6 @@ async function probarEmail(){const m=document.getElementById('em-msg');
   const r=await jpost('/api/email/test');
   m.style.color=r.ok?'var(--green)':'var(--red)';m.textContent=r.msg||(r.ok?'Enviado':'Error');}
 
-// ----- IPS -----
 async function loadIps(){try{const d=await jget('/api/ips');
   const e=document.getElementById('ips-state');
   e.textContent=d.enabled?'ACTIVO':'DESACTIVADO';e.className='ips-state '+(d.enabled?'ips-on':'ips-off');
@@ -608,11 +551,9 @@ setInterval(()=>{refresh(); if(!document.getElementById('v-ips').classList.conta
 </script>
 </body></html>"""
 
-
 def main():
     print("Dashboard del IDS -> http://127.0.0.1:5000   (Ctrl+C para detener)")
     app.run(host="127.0.0.1", port=5000, debug=False)
-
 
 if __name__ == "__main__":
     main()

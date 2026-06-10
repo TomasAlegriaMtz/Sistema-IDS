@@ -3,7 +3,6 @@
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 ![Scapy](https://img.shields.io/badge/Scapy-captura%20de%20paquetes-orange)
 ![Plataforma](https://img.shields.io/badge/SO-Linux%20%7C%20Windows-informational)
-![Licencia](https://img.shields.io/badge/Licencia-GPLv3-green)
 
 Sistema de **Detección y Prevención de Intrusos (IDS/IPS)** escrito en **Python** sobre **Scapy**.
 Monitorea la red **EN VIVO** en las **Capas 2/3/7** del modelo OSI: registra la actividad,
@@ -14,7 +13,7 @@ todo desde un **dashboard web** en tiempo real.
 
 ---
 
-## ✨ Características
+## Características
 
 ### Módulos principales
 | Módulo | Qué hace |
@@ -52,12 +51,18 @@ sudo ./venv/bin/python3 -m src.web.app
 Abre el panel en **http://127.0.0.1:5000**.
 
 ### 🪟 Windows
-**Opción A — Ejecutable (lo más fácil):**
-1. Instala **[Npcap](https://npcap.com)**.
-2. Doble clic en **`ids.exe`** → acepta los permisos (UAC).
-3. Se abre el navegador con el panel en **http://127.0.0.1:5000** y empieza a capturar en vivo.
 
-**Opción B — Desde código** (PowerShell **como administrador**, con Npcap instalado):
+> ⚠️ El `ids.exe` **no viene en el repositorio** (los binarios no se versionan). Hay que **construirlo** una vez, o ejecutar desde código.
+
+**Opción A — Construir el ejecutable y usarlo:**
+1. Instala **[Npcap](https://npcap.com)** y **Python**.
+2. Doble clic en **`build_exe.bat`** → genera `dist\ids.exe` (tarda unos minutos).
+3. Doble clic en **`dist\ids.exe`** → acepta los permisos (UAC) → captura en vivo + panel.
+
+> Si descargaste el `.exe` ya hecho (de la pestaña **Releases** o del `IDS-Windows.zip`), te saltas los pasos 1-2: solo instala Npcap y doble clic en `ids.exe`.
+
+**Opción B — Desde código (sin construir el `.exe`):**
+PowerShell **como administrador**, con Npcap instalado:
 ```powershell
 python -m venv venv
 venv\Scripts\python.exe -m pip install -r requirements.txt
@@ -113,8 +118,7 @@ ids/
 └── logs/                    # bitácora (se genera sola)
 ```
 
-## 📜 Licencia
-**GNU GPL v3** — software libre: úsalo, estúdialo, compártelo y modifícalo.
+
 
 ## ⚠️ Aviso
 Proyecto **educativo**. Úsalo únicamente en redes propias o con autorización explícita.

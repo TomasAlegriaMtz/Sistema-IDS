@@ -1,45 +1,22 @@
-# ============================================================
-#  IDS - Configuracion general (parametros NO sensibles)
-#  Los secretos (SMTP, API keys) van en el archivo .env
-# ============================================================
-
 network:
-  # Interfaz donde captura el IDS.
-  # En la VM-gateway de Kali suele ser la de la red interna (eth1).
-  # Revisa los nombres con:  ip a
   interface: eth0
 
-  # Subred local que se vigila (para listas blancas de Capa 2/3).
-  #   PRUEBAS en NAT de VirtualBox -> 10.0.2.0/24
-  #   LAB real (VM-gateway)        -> 192.168.50.0/24
   monitored_subnet: 10.0.2.0/24
 
-  # El propio equipo que ejecuta el IDS (sensor) NO se marca como intruso.
-  # (Asi tu PC no sale como intrusa sin tener que ponerla en la lista blanca.)
   ignorar_equipo_local: true
 
-# Identidad del administrador.
-# Concepto IAA: este correo se cambia AQUI sin tocar el codigo.
 admin:
   email: admin@organizacion.local
 
 alerts:
-  # Remitente que aparece en los correos de alerta.
   from_address: ids@organizacion.local
-  # Anti-spam interno: segundos de enfriamiento por origen,
-  # para no mandar 1000 correos por el mismo intruso.
   cooldown_seconds: 300
-  # Segundos de espera entre correos (los planes gratuitos como Mailtrap
-  # limitan la cantidad de correos por segundo).
   smtp_delay_seconds: 2
 
 threat_intel:
-  # Feed de IPs maliciosas (botnets / C2) de abuse.ch
   feodo_url: https://feodotracker.abuse.ch/downloads/ipblocklist.csv
-  # Cache local para que la demo funcione aunque no haya internet.
   cache_file: config/blacklist.cache
   refresh_hours: 12
 
 logging:
-  # Base de datos SQLite donde se guarda la bitacora.
   database: logs/ids.db

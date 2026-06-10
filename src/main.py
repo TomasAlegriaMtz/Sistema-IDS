@@ -1,12 +1,3 @@
-"""
-main.py - Orquestador del IDS
-=============================
-Carga la configuracion, arma los modulos y arranca la CAPTURA EN VIVO.
-
-Uso:
-    sudo ./venv/bin/python3 -m src.main          # usa la interfaz de settings.yaml
-    sudo ./venv/bin/python3 -m src.main --auto   # autodetecta interfaz y subred
-"""
 from __future__ import annotations
 
 import argparse
@@ -20,9 +11,7 @@ from src.site_monitor import ModuloMonitoreoSitios
 from src.threat_intel import ModuloThreatIntel
 from src.forensics import ModuloForense
 
-
 def main(auto: bool = False):
-    """Arranca el IDS en captura EN VIVO. 'auto' autodetecta interfaz y subred."""
     print("=" * 64)
     print("  IDS - Sistema de Deteccion de Intrusos")
     print("=" * 64)
@@ -45,19 +34,16 @@ def main(auto: bool = False):
     print(f"  Equipos autorizados    : {len(whitelist['equipos'])}")
     print("-" * 64)
 
-    # Componentes compartidos
     notificador = Notificador(settings)
     reporter = Reporter(settings)
 
     forense = ModuloForense(settings, notificador, reporter=reporter)
 
-    # El propio equipo (sensor) no se marca como intruso (sin estar en la lista blanca).
     ips_propias, macs_propias = set(), set()
     if net.get("ignorar_equipo_local", True):
         ips_propias, macs_propias = direcciones_propias()
         print(f"  Equipo propio (ignorado): {len(ips_propias)} IPs / {len(macs_propias)} MACs")
 
-    # IPs que NUNCA se bloquean en modo IPS: propias + autorizadas + gateway.
     protegidas = set(ips_propias) | set(whitelist.get("ips", set()))
     gw = detectar_gateway()
     if gw:
@@ -88,7 +74,6 @@ def main(auto: bool = False):
     except KeyboardInterrupt:
         print("\n[IDS] Detenido por el usuario.")
 
-
 def _cli():
     parser = argparse.ArgumentParser(
         description="IDS - Sistema de Deteccion de Intrusos (captura en vivo)")
@@ -96,7 +81,6 @@ def _cli():
                         help="Autodetecta la interfaz y la subred (recomendado)")
     args = parser.parse_args()
     main(auto=args.auto)
-
 
 if __name__ == "__main__":
     _cli()

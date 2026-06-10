@@ -1,18 +1,3 @@
-"""
-forensics.py - Modulo 4: Automatizacion Forense (Whois / Abuse)
-===============================================================
-Cuando el Modulo 3 detecta una IP peligrosa, este modulo automatiza la
-investigacion para que el administrador pueda REPORTAR el sitio facilmente:
-
-  1. RDAP / Whois (libreria ipwhois): obtiene el contacto de ABUSO del
-     proveedor de hosting, el ASN, la red y el pais.
-  2. AbuseIPDB (API): score de reputacion, numero de reportes, ISP, dominio.
-
-El resultado se envia por correo al administrador como "Reporte forense".
-
-La consulta se hace en un HILO en segundo plano para no bloquear la captura
-(RDAP y las APIs son lentas).
-"""
 from __future__ import annotations
 
 import threading
@@ -21,7 +6,6 @@ import requests
 from ipwhois import IPWhois
 
 from src.config_loader import load_secrets
-
 
 class ModuloForense:
     def __init__(self, settings: dict, notificador, reporter=None):
@@ -33,19 +17,16 @@ class ModuloForense:
             self.abuseipdb_key = secrets.get("ABUSEIPDB_API_KEY", "") or ""
         except Exception:
             self.abuseipdb_key = ""
-        # La clave de PRUEBA "cambia_esto" no sirve: tratarla como vacia.
+
         if self.abuseipdb_key in ("", "cambia_esto"):
             self.abuseipdb_key = ""
 
-    # ------------------ disparo asincrono ------------------
     def investigar(self, ip: str, evento: dict | None = None):
-        """Lanza la investigacion en segundo plano (no bloquea al sniffer)."""
         t = threading.Thread(target=self._investigar, args=(ip, evento), daemon=True)
         t.start()
         self._threads.append(t)
 
     def esperar(self, timeout: float = 25):
-        """Espera a que terminen las investigaciones en curso (modo demo)."""
         for t in self._threads:
             t.join(timeout=timeout)
 
@@ -55,9 +36,7 @@ class ModuloForense:
         abuse = self._consultar_abuseipdb(ip)
         self._enviar_reporte(ip, evento, rdap, abuse)
 
-    # ------------------ consultas ------------------
     def _consultar_rdap(self, ip: str) -> dict:
-        """Whois/RDAP: datos de la red y contacto de abuso del proveedor."""
         datos: dict = {}
         try:
             res = IPWhois(ip).lookup_rdap(depth=1)
@@ -82,7 +61,6 @@ class ModuloForense:
         return datos
 
     def _consultar_abuseipdb(self, ip: str) -> dict:
-        """AbuseIPDB: reputacion de la IP (requiere API key en .env)."""
         if not self.abuseipdb_key:
             return {"error": "sin API key (define ABUSEIPDB_API_KEY en .env)"}
         try:
@@ -104,7 +82,6 @@ class ModuloForense:
         except Exception as e:
             return {"error": str(e)}
 
-    # ------------------ reporte ------------------
     def _enviar_reporte(self, ip, evento, rdap, abuse):
         L = [f"REPORTE FORENSE de la IP peligrosa: {ip}", ""]
 

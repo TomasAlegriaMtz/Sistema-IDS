@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-# =====================================================================
-#   Construye el ejecutable del IDS (Linux) con PyInstaller.
-#   Captura EN VIVO. Genera dist/ids listo para distribuir (binario + config).
-#   Nota: el binario de Linux solo sirve en Linux (no en Windows).
-# =====================================================================
 cd "$(dirname "$0")"
 
 echo "[1/3] Preparando entorno de compilacion..."

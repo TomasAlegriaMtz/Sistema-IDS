@@ -1,16 +1,3 @@
-"""
-threat_intel.py - Modulo 3: IPs Peligrosas (Threat Intelligence)
-================================================================
-Carga una lista negra de IPs externas asociadas a malware/botnets y, al
-detectar una conexion HACIA (o DESDE) alguna de ellas, envia un correo de
-"ALERTA DE EMERGENCIA" indicando el tipo de riesgo.
-
-Fuentes de la lista negra:
-  1. Feed publico de abuse.ch (Feodo Tracker): C2 de botnets (Emotet, etc.).
-     Se descarga y se CACHEA en local.
-  2. Lista MANUAL (config/blacklist_manual.txt): editable a mano o desde el
-     dashboard web. Se RECARGA en caliente cuando el archivo cambia.
-"""
 from __future__ import annotations
 
 import ipaddress
@@ -24,7 +11,6 @@ from src.config_loader import load_blacklist_manual, BLACKLIST_MANUAL_FILE
 from src import firewall
 
 from src.paths import BASE_DIR
-
 
 class ModuloThreatIntel:
     def __init__(self, settings: dict, notificador, forense=None, reporter=None,
@@ -41,9 +27,9 @@ class ModuloThreatIntel:
         self.cooldown = (settings.get("alerts", {}) or {}).get("cooldown_seconds", 300)
 
         self._ultima_alerta = {}
-        self._feed = {}        # IPs del feed de abuse.ch (se cargan una vez)
-        self._manual = {}      # IPs de la lista manual (recargable en caliente)
-        self.blacklist = {}    # combinacion feed + manual
+        self._feed = {}
+        self._manual = {}
+        self.blacklist = {}
 
         self._last_check = 0.0
         self._manual_mtime = self._mtime()
@@ -53,7 +39,6 @@ class ModuloThreatIntel:
         self._rebuild()
         print(f"[threat-intel] Lista negra lista: {len(self.blacklist)} IPs peligrosas.")
 
-    # ------------------ utilidades ------------------
     @staticmethod
     def _es_ip(texto: str) -> bool:
         try:
@@ -69,10 +54,8 @@ class ModuloThreatIntel:
             return 0
 
     def _rebuild(self):
-        """Combina feed + manual (el manual tiene prioridad)."""
         self.blacklist = {**self._feed, **self._manual}
 
-    # ------------------ carga de la lista negra ------------------
     def _cargar_feed(self):
         texto = None
         try:
@@ -104,7 +87,6 @@ class ModuloThreatIntel:
             self._manual[e["ip"]] = e.get("desc") or "Lista negra manual"
 
     def _maybe_reload(self):
-        """Recarga la lista manual si cambio (editada desde la web)."""
         ahora = time.time()
         if ahora - self._last_check < 2:
             return
@@ -119,7 +101,6 @@ class ModuloThreatIntel:
             except Exception as ex:
                 print(f"[threat-intel] Error al recargar lista negra: {ex}")
 
-    # ------------------ deteccion ------------------
     def _en_cooldown(self, clave: str) -> bool:
         ahora = time.time()
         if ahora - self._ultima_alerta.get(clave, 0) < self.cooldown:
@@ -162,7 +143,7 @@ class ModuloThreatIntel:
             self.reporter.registrar_alerta(
                 "emergencia", f"IP peligrosa {ip_mala}: {riesgo}", ip_mala, cuerpo
             )
-        # Modo IPS (si esta activo): bloquear la IP peligrosa en el firewall.
+
         firewall.bloquear(ip_mala, self.protegidas)
         if self.forense:
             self.forense.investigar(ip_mala, evento)

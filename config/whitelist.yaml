@@ -1,16 +1,3 @@
-# ============================================================
-#  IDS - Lista Blanca de equipos autorizados
-#
-#  Un equipo se considera AUTORIZADO si su MAC (Capa 2) o su
-#  IP (Capa 3) de origen aparece en esta lista.
-#
-#  Para dar de alta un equipo: agrega un bloque con su nombre,
-#  ip y mac. (En el manual de usuario se explica con capturas.)
-#
-#  NOTA: estas IPs corresponden a la red NAT de VirtualBox (10.0.2.0/24)
-#  usada en pruebas. En el lab real cambialas por las de tu red.
-# ============================================================
-
 authorized:
   - name: Cliente-Demo (representa tu VM Kali)
     ip: 10.0.2.15

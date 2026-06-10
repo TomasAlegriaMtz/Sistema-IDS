@@ -1,21 +1,3 @@
-"""
-firewall.py - Modo IPS (bloqueo automatico)
-===========================================
-Cuando el modo IPS esta ACTIVO, el IDS no solo detecta: BLOQUEA en el
-firewall del sistema operativo las IPs de intrusos o IPs peligrosas.
-
-  * Linux:   iptables           (requiere root)
-  * Windows: netsh advfirewall  (requiere administrador)
-
-El estado (activo/inactivo) y la lista de IPs bloqueadas se guardan en
-archivos JSON dentro de logs/, para que el dashboard (que puede ser otro
-proceso) pueda encender/apagar el modo y ver/limpiar los bloqueos.
-
-SEGURIDAD:
-  * Por defecto el modo IPS viene DESACTIVADO.
-  * NUNCA bloquea IPs "protegidas" (el propio equipo, el gateway, las
-    autorizadas) para no dejar al sensor sin red.
-"""
 from __future__ import annotations
 
 import json
@@ -32,34 +14,26 @@ PREFIJO = "IDS-block"
 
 _lock = threading.Lock()
 
-
 def _leer_json(ruta, defecto):
     try:
         return json.loads(ruta.read_text(encoding="utf-8"))
     except Exception:
         return defecto
 
-
 def _escribir_json(ruta, datos):
     ruta.parent.mkdir(parents=True, exist_ok=True)
     ruta.write_text(json.dumps(datos), encoding="utf-8")
 
-
 def esta_activo() -> bool:
-    """True si el modo IPS esta encendido (por defecto False)."""
     return bool(_leer_json(ESTADO_FILE, {}).get("enabled", False))
-
 
 def set_activo(valor: bool):
     _escribir_json(ESTADO_FILE, {"enabled": bool(valor)})
 
-
 def listar_bloqueadas() -> list:
     return _leer_json(BLOQUEADAS_FILE, [])
 
-
 def bloquear(ip: str, protegidas=None) -> bool:
-    """Bloquea una IP en el firewall, SOLO si el modo IPS esta activo."""
     if not ip or not esta_activo():
         return False
     if protegidas and ip in protegidas:
@@ -75,7 +49,6 @@ def bloquear(ip: str, protegidas=None) -> bool:
             print(f"[IPS] IP BLOQUEADA en el firewall: {ip}")
             return True
     return False
-
 
 def _aplicar_regla(ip: str) -> bool:
     try:
@@ -96,9 +69,7 @@ def _aplicar_regla(ip: str) -> bool:
         print(f"[IPS] Error al bloquear {ip}: {e}")
         return False
 
-
 def limpiar() -> int:
-    """Elimina todas las reglas de bloqueo creadas por el IDS."""
     with _lock:
         bloqueadas = listar_bloqueadas()
         for ip in bloqueadas:

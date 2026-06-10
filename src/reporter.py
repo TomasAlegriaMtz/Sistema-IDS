@@ -1,17 +1,3 @@
-"""
-reporter.py - Bitacora del IDS (persistencia en SQLite)
-=======================================================
-Guarda en una base de datos SQLite los eventos relevantes del IDS.
-Por ahora la tabla principal es:
-
-    visitas: dominios (DNS/HTTP) que consultan los equipos de la red.
-
-La base de datos (logs/ids.db) es la "bitacora" del sistema y la usa
-tanto el reporte de consola (tools/reporte.py) como el dashboard web.
-
-Nota de concurrencia: el sniffer y el hilo de alertas pueden escribir
-desde hilos distintos, por eso usamos check_same_thread=False + un Lock.
-"""
 from __future__ import annotations
 
 import sqlite3
@@ -20,7 +6,6 @@ from datetime import datetime
 from pathlib import Path
 
 from src.paths import BASE_DIR
-
 
 class Reporter:
     def __init__(self, settings: dict):
@@ -60,7 +45,6 @@ class Reporter:
             self._conn.commit()
 
     def registrar_visita(self, src_ip: str, dominio: str, tipo: str):
-        """Inserta una visita (dominio consultado) en la bitacora."""
         fecha = datetime.now().isoformat(sep=" ", timespec="seconds")
         with self._lock:
             self._conn.execute(
@@ -70,7 +54,6 @@ class Reporter:
             self._conn.commit()
 
     def registrar_alerta(self, severidad: str, titulo: str, src_ip: str, detalle: str = ""):
-        """Inserta una alerta de seguridad (intruso / emergencia / forense)."""
         fecha = datetime.now().isoformat(sep=" ", timespec="seconds")
         with self._lock:
             self._conn.execute(
@@ -81,7 +64,6 @@ class Reporter:
             self._conn.commit()
 
     def visitas_recientes(self, limite: int = 50):
-        """Devuelve las ultimas N visitas (para el reporte/dashboard)."""
         with self._lock:
             cur = self._conn.execute(
                 "SELECT fecha, src_ip, dominio, tipo "

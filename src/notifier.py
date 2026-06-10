@@ -1,18 +1,3 @@
-"""
-notifier.py - Envio de alertas por correo (SMTP)
-================================================
-Envia las alertas del IDS al administrador mediante SMTP (Mailtrap en pruebas).
-
-Diseno:
-  * La config de correo (servidor, usuario, password, destinatario, remitente)
-    se lee FRESCA en cada envio, asi los cambios hechos desde el dashboard web
-    aplican EN CALIENTE, sin reiniciar el IDS.
-  * Las credenciales viven en .env (NUNCA en el codigo).
-  * Si no hay SMTP valido, entra en "MODO CONSOLA": imprime las alertas en
-    pantalla en vez de enviarlas (util para probar sin configurar correo).
-  * El envio corre en un HILO TRABAJADOR para no bloquear la captura, con
-    espaciado entre correos y reintentos (limites de planes gratuitos).
-"""
 from __future__ import annotations
 
 import queue
@@ -22,7 +7,6 @@ import time
 from email.message import EmailMessage
 
 from src.config_loader import load_secrets
-
 
 class Notificador:
     def __init__(self, settings: dict):
@@ -40,7 +24,6 @@ class Notificador:
         self._worker.start()
 
     def _config(self) -> dict:
-        """Lee la configuracion de correo FRESCA (permite cambios en caliente)."""
         cfg = {"ok": False, "host": "", "port": 587, "user": "", "password": ""}
         to_env = from_env = ""
         try:
@@ -62,14 +45,11 @@ class Notificador:
         return cfg
 
     def enviar(self, asunto: str, cuerpo: str):
-        """Encola una alerta (no bloquea a quien la llama)."""
         self._cola.put((asunto, cuerpo))
 
     def esperar(self):
-        """Bloquea hasta que se vacie la cola de envios (util en modo demo)."""
         self._cola.join()
 
-    # -------------------- interno --------------------
     def _bucle(self):
         while True:
             asunto, cuerpo = self._cola.get()
@@ -81,7 +61,7 @@ class Notificador:
                     self._mostrar_consola(asunto, cuerpo)
             finally:
                 self._cola.task_done()
-            # Espaciar envios (los planes gratuitos limitan correos por segundo)
+
             time.sleep(self.delay)
 
     def _enviar_con_reintento(self, cfg, asunto, cuerpo, intentos=3):
@@ -113,9 +93,7 @@ class Notificador:
             smtp.send_message(msg)
         print(f"[notificador] Correo enviado a {cfg['to']}: {asunto}")
 
-
 def enviar_prueba(settings) -> tuple:
-    """Envia un correo de PRUEBA con la config actual. Devuelve (ok, mensaje)."""
     from src.config_loader import load_secrets
     try:
         s = load_secrets()

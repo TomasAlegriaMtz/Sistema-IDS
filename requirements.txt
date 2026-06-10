@@ -1,13 +1,7 @@
-# ============================================================
-#  IDS - Dependencias de Python
-#  Instalar dentro de un entorno virtual:
-#     python3 -m venv venv && source venv/bin/activate
-#     pip install -r requirements.txt
-# ============================================================
-scapy>=2.5.0          # captura y disección de paquetes (Capa 2/3/7)
-python-dotenv>=1.0.0  # carga de credenciales desde .env (sin hardcodear)
-PyYAML>=6.0           # lectura de config/ (settings y whitelist)
-requests>=2.31.0      # descarga de feeds de threat intel + API AbuseIPDB
-ipwhois>=1.2.0        # consultas RDAP/Whois (contacto de abuso)
-rich>=13.0.0          # bitacora en vivo en la terminal (CLI)
-Flask>=3.0.0          # dashboard web del reporte
+scapy>=2.5.0
+python-dotenv>=1.0.0
+PyYAML>=6.0
+requests>=2.31.0
+ipwhois>=1.2.0
+rich>=13.0.0
+Flask>=3.0.0
