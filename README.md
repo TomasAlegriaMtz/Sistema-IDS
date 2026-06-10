@@ -9,7 +9,7 @@ Monitorea la red **EN VIVO** en las **Capas 2/3/7** del modelo OSI: registra la 
 detecta amenazas, **alerta por correo** y puede **bloquear automáticamente** (modo IPS),
 todo desde un **dashboard web** en tiempo real.
 
-> Proyecto académico de ciberseguridad. Licencia **GNU GPL v3** (en el espíritu de Stallman & Torvalds 🐧).
+
 
 ---
 
@@ -119,8 +119,3 @@ ids/
 ```
 
 
-
-## ⚠️ Aviso
-Proyecto **educativo**. Úsalo únicamente en redes propias o con autorización explícita.
-El monitoreo de redes puede estar regulado por la ley (en México, la **LFPDPPP** y artículos
-constitucionales sobre privacidad).
